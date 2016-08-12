@@ -1,0 +1,54 @@
+.result {
+    position: relative;
+    height: 40px;
+    font-family: Helvetica;
+}
+.result:hover {
+    background-color: tan;
+}
+.result a, .result ul {
+    text-decoration: none;
+    color: black;
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+.deck-data {
+    display: inline-block;
+    margin-right: 15px;
+}
+.deck-colors div.active {
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+.deck-color-black {
+    display: none;
+}
+.deck-color-black.active {
+    background: url('./resources/blackmana-active.png');
+}
+.deck-color-blue {
+    display: none;
+}
+.deck-color-blue.active {
+    background: url('./resources/bluemana-active.png');
+}
+.deck-color-green {
+    display: none;
+}
+.deck-color-green.active {
+    background: url('./resources/greenmana-active.png');
+}
+.deck-color-red {
+    display: none;
+}
+.deck-color-red.active {
+    background: url('./resources/redmana-active.png');
+}
+.deck-color-white {
+    display: none;
+}
+.deck-color-white.active {
+    background: url('./resources/whitemana-active.png');
+}

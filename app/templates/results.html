@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block content %}
+        <link rel="stylesheet" href="../static/results.css">
+        <ul id='result-list'>
+            {% for result in results %}
+            <li class="result"><a href='./deck?id={{result.id}}'>
+                <ul>
+                    <li class="deck-name deck-data">{{result.name}}</li>
+                    <li class="deck-size deck-data">{{result.size}}</li>
+                    <li class="deck-colors deck-data">
+                        <div class="deck-color-black {% if result.black==1 %}active{% endif %}"></div>
+                        <div class="deck-color-blue {% if result.blue==1 %}active{% endif %}"></div>
+                        <div class="deck-color-green {% if result.green==1 %}active{% endif %}"></div>
+                        <div class="deck-color-red {% if result.red==1 %}active{% endif %}"></div>
+                        <div class="deck-color-white {% if result.white==1 %}active{% endif %}"></div>
+                    </li>
+                </ul>
+            </a></li>
+            {% endfor %}
+        </ul>
+{% endblock %}

@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+:focus {
+    outline: none;
+}
+
+ul {
+    list-style: none;
+}
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+header {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 150px;
+    position: absolute;
+    background-color: #19191F;
+    border-right: 1px solid rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.4);
+}
+#logo {
+    margin: 21px;
+    margin-top: 30px;
+}
+#search {
+    position: relative;
+    width: 150px;
+}
+#search-field {
+    display: inline-block;
+    width: 95%;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: #24242A;
+    border-color: #303035;
+    color: white;
+    margin-left: 2.5%;
+}
+
+#color-filter {
+    margin: 0px;
+    margin-top: 10px;
+    padding: 0;
+    margin-left: 25%;
+}
+
+#color-filter li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#color-filter input[type=checkbox] {
+    position: absolute;
+    opacity: 0;
+}
+#color-filter input[type=checkbox] + label
+{
+    height: 20px;
+    width: 20px;
+    display:inline-block;
+    padding: 0 0 0 0px;
+}
+#color-filter input[type=checkbox]:checked + label
+{
+    height: 20px;
+    width: 20px;
+    display:inline-block;
+    padding: 0 0 0 0px;
+}
+
+#color-filter input[type=checkbox]#search-black + label {
+    background: url('./resources/blackmana-inactive.png');
+}
+#color-filter input[type=checkbox]#search-black:checked + label {
+    background: url('./resources/blackmana-active.png');
+}
+
+#color-filter input[type=checkbox]#search-blue + label {
+    background: url('./resources/bluemana-inactive.png');
+}
+#color-filter input[type=checkbox]#search-blue:checked + label {
+    background: url('./resources/bluemana-active.png');
+}
+
+#color-filter input[type=checkbox]#search-green + label {
+    background: url('./resources/greenmana-inactive.png');
+}
+#color-filter input[type=checkbox]#search-green:checked + label {
+    background: url('./resources/greenmana-active.png');
+}
+
+#color-filter input[type=checkbox]#search-red + label {
+    background: url('./resources/redmana-inactive.png');
+}
+#color-filter input[type=checkbox]#search-red:checked + label {
+    background: url('./resources/redmana-active.png');
+}
+
+#color-filter input[type=checkbox]#search-white + label {
+    background: url('./resources/whitemana-inactive.png');
+}
+#color-filter input[type=checkbox]#search-white:checked + label {
+    background: url('./resources/whitemana-active.png');
+}
+
+#search-black-listitem {
+    margin-left: 16px;
+}
+
+#main-content {
+    position: absolute;
+    left: 161;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    overflow-y: auto;
+}

@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>{{title}}</title>
+        <link rel="stylesheet" href="../static/layout.css">
+        <script src="../static/layout.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1 id='logo'><a href="/index">Dem Decks Doh</a></h1>
+            <div id="search">
+                <input type="text" id="search-field" onkeypress="search(event);" {% if searchTerm is defined %}value="{{searchTerm}}"{% endif %}>
+                <br>
+                <ul id="color-filter">
+                    <li id="search-black-listitem">
+                        <input name="black" type="checkbox" id="search-black"
+                               {% if searchColors is defined and searchColors['black']==1 %}checked='True'{% endif %}>
+                        <label for="black"></label>
+                    </li>
+                    <li id="search-blue-listitem">
+                        <input name="blue" type="checkbox" id="search-blue"
+                               {% if searchColors is defined and searchColors['blue']==1 %}checked='True'{% endif %}>
+                        <label for="blue"></label>
+                    </li>
+                    <br>
+                    <li id="search-green-listitem">
+                        <input name="green" type="checkbox" id="search-green"
+                               {% if searchColors is defined and searchColors['green']==1 %}checked='True'{% endif %}>
+                        <label for="green"></label>
+                    </li>
+                    <li id="search-red-listitem">
+                        <input name="red" type="checkbox" id="search-red"
+                               {% if searchColors is defined and searchColors['red']==1 %}checked='True'{% endif %}>
+                        <label for="red"></label>
+                    </li>
+                    <li id="search-white-listitem">
+                        <input name="white" type="checkbox" id="search-white"
+                               {% if searchColors is defined and searchColors['white']==1 %}checked='True'{% endif %}>
+                        <label for="white"></label>
+                    </li>
+                </ul>
+            </div>
+            <br>
+            <div id="builderLink">
+                <a href="/deck/builder">Deck Builder</a>
+            </div>
+        </header>
+        <div id='main-content'>
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

@@ -1,0 +1,14 @@
+#deck-attributes {
+    position: absolute;
+    left: 0;
+    right: 40%
+}
+.deck-attribute label {
+    border-right: inset 1px black;
+    margin: 10px;
+    margin-left: 0px;
+}
+.deck-attribute {
+    margin: 10px;
+    margin-left: 0;
+}

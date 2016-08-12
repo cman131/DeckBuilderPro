@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <link rel="stylesheet" href="../static/deckbuilder.css">
+    <script src="../static/angular.min.js"></script>
+    <script src="../static/deckbuilder.js"></script>
+    <div id="app-div" class="no-select" ng-app="app">
+        <div id="deck-view" ng-controller="DeckController as deckctrl">
+            <input type="button" id="save" value="Save" ng-click="save()">
+            <div id="deck-info">
+                <h2 id="deck-name" ng-click="showEditor()" ng-show="!edit">{[deckctrl.deck.name]}</h2>
+                <input name="Deck Name" type="text" ng-show="edit" ng-blur="blurUpdate()" ng-model="deckctrl.deck.name" id="deck-name-input">
+                <h5 id="deck-size">Size: {[deckctrl.deck.count + deckctrl.deck.swamp +
+                    deckctrl.deck.island + deckctrl.deck.forest + deckctrl.deck.mountain + deckctrl.deck.plains]}</h5>
+            </div>
+            <div id="deck-collection">
+                <ul class="deck-col">
+                    <li class="deck-row">
+                        <ul id="planeswalkers">
+                            <h3>PlanesWalkers</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'planeswalker'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                    <li class="deck-row">
+                        <ul id="creatures">
+                            <h3>Creatures</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'creature'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="deck-col">
+                    <li class="deck-row">
+                        <ul id="instants">
+                            <h3>Instants</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'instant'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                    <li class="deck-row">
+                        <ul id="enchantment">
+                            <h3>Enchantments</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'enchantment'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="deck-col">
+                    <li class="deck-row">
+                        <ul id="sorceries">
+                            <h3>Sorceries</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'sorcery'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                    <li class="deck-row">
+                        <ul id="artifact">
+                            <h3>Artifacts</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'artifact'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                    <li class="deck-row">
+                        <ul id="special-land">
+                            <h3>Special Lands</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'land'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <ul id="land-view">
+                <li id="{[land]}" ng-repeat="land in lands" ng-mouseenter="hovering=true" ng-mouseleave="hovering=false">
+                    <a class="land-add land-ctrl" ng-hide="!hovering" ng-click="deckctrl.modLand('+', land)">+</a>
+                    <label class="land-count land-ctrl">{[deckctrl.deck[land]]}</label>
+                    <a class="land-remove land-ctrl" ng-hide="!hovering" ng-click="deckctrl.modLand('-', land)">-</a>
+                </li>
+                </li>
+            </ul>
+        </div>
+        <div id="card-view" ng-controller="CardController as menu">
+            <div id="card-filter">
+                <input type="search" ng-model="menu.query">
+                <select ng-model="menu.set" ng-options="option.code as option.name for (key, option) in menu.list">
+                </select>
+            </div>
+            <ul id="card-display">
+                <li ng-click="menu.add(card)" ng-hide="card.type.indexOf('Basic Land')>-1" class="card" ng-repeat="card in menu.list[menu.set].cards | filter:menu.query">
+                    <h2>{[card.name]}</h2>
+                    <h3>{[card.type]}</h3>
+                    <div class="cost">{[card.rarity]} {[card.cmc]}</div>
+                    <img ng-src="http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid={[card.multiverseid]}">
+                    <p>{[card.text]}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

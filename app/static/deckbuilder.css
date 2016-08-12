@@ -1,0 +1,201 @@
+#app-div {
+    padding: 0;
+    margin: 0;
+}
+#save {
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+#deck-name:hover {
+    color: cyan;
+}
+#deck-name-input {
+    text-align: center;
+    height: 28px;
+    font-size: 24px;
+    font-family: Times New Roman;
+    margin: 19px;
+    outline: 0;
+    margin-bottom: 0.7px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
+    font-weight: bold;
+}
+.card h2 {
+	font-size: 14px;
+	position: absolute;
+	left: 60px;
+	top: 0px;
+}
+
+.card h3 {
+	font-size: 12px;
+	position: absolute;
+	left: 60px;
+	top: 20px;
+}
+
+.card p {
+	font-size: 10px;
+	display: inline-block;
+	position: absolute;
+	right: 0;
+	left: 60px;
+	top: 40px;
+	bottom: 0;
+}
+
+.card {
+	border: 1px solid blue;
+	height: 100px;
+	position: relative;
+	cursor: pointer;
+}
+.card:hover {
+    background-color: tan;
+}
+.card:active {
+    background-color: cyan;
+}
+#card-display {
+	list-style: none;
+	position: relative;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	margin-top: 30px;
+}
+
+.card img {
+	display: inline-block;
+	width: 50px;
+	height: 75px;
+}
+
+.card .cost {
+	position: absolute;
+	top:0;
+	right:0;
+	font-size: 10px;
+}
+
+#card-view {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top:0;
+    width: 415px;
+}
+
+#card-filter {
+	position: fixed;
+	height: 15px;
+	width: 30%;
+	right: 0;
+	top: 0;
+	z-index: 2;
+	background-color: white;
+}
+
+#card-filter input {
+	width: 30%;
+	display: inline-block;
+}
+
+#deck-view {
+	right: 430px;
+	position: fixed;
+	left: 161;
+	bottom: 0;
+	display: inline-block;
+	top: 0;
+	height: 100%;
+}
+#deck-info {
+    text-align: center;
+}
+.deck-col {
+    display: inline-block;
+    vertical-align: top;
+}
+.deck-card {
+    cursor: pointer;
+    font-family: cursive;
+}
+.deck-card:hover {
+    background-color: tan;
+}
+.deck-card:active {
+    background-color: cyan;
+}
+
+
+#land-view {
+    position: absolute;
+    bottom: 0;
+    height: 100px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+}
+#land-view li {
+    height: 100px;
+    width: 100px;
+    display: inline-block;
+    margin-left: 8%;
+    position: relative;
+}
+
+.land-ctrl {
+    color: white;
+    background-color: grey;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    border-radius: 50px;
+    text-align: center;
+
+}
+.land-count {
+    top: 40px;
+    bottom: 40px;
+    background-color: black;
+}
+.land-add {
+    top: 0;
+    cursor: pointer;
+}
+.land-remove {
+    bottom: 0;
+    cursor: pointer;
+}
+.land-ctrl:hover {
+    display: block;
+}
+
+#swamp {
+    background: url('http://vignette2.wikia.nocookie.net/mtg/images/a/a6/Mana_B.png/revision/latest/scale-to-width-down/100?cb=20130604114019');
+}
+#island {
+    background: url('http://vignette2.wikia.nocookie.net/mtg/images/a/a8/Mana_U.png/revision/latest/scale-to-width-down/100?cb=20130604114015');
+}
+#forest {
+    background: url('http://vignette3.wikia.nocookie.net/mtg/images/f/f7/Mana_G.png/revision/latest/scale-to-width-down/100?cb=20130604114032');
+}
+#mountain {
+    background: url('http://vignette3.wikia.nocookie.net/mtg/images/c/ce/Mana_R.png/revision/latest/scale-to-width-down/100?cb=20130604114022');
+}
+#plains {
+    background: url('http://vignette4.wikia.nocookie.net/mtg/images/d/da/Mana_W.png/revision/latest/scale-to-width-down/100?cb=20130604114009');
+}
