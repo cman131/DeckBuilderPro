@@ -14,6 +14,9 @@ Stage 1:
 	  - Color = the colors contained within the deck
 	  - Size = the number of cards
 	  - List of Cards with counts within deck
+	Output deck to Tabletop Sim
+	  - Download link with cards and pictures
+	  - Include back card image
 Stage 2:
 	Local Cards:
 	 - Card Table
@@ -39,3 +42,5 @@ Stage 3:
 	  - View Collection
 	 DeckBuilder from Collection:
 	  - Available cards sourced from user collection
+	 Integrate Professor Meneely's card builder:
+	  - Output config files and images
