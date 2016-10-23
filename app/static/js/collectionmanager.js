@@ -1,0 +1,3 @@
+app.Directive("A", [], function(){
+
+});
