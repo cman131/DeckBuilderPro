@@ -8,6 +8,11 @@ def index():
     user = {'name': 'Conor', 'id': 1}
     return render_template('index.html', title='Home', user=user)
 
+@app.route('/testroute')
+def testIndex():
+    user = {'name': 'Conor', 'id': 1}
+    return render_template('testindex.html', title='Home', user=user)
+
 @app.route('/results')
 def results():
     term = request.args.get('term')

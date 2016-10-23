@@ -1,0 +1,12 @@
+<nav class='navbar navbar-default'>
+  <div class="container-fluid">
+    <ul class="nav navbar-nav navbar-left">
+      <li class="navbar-active"><a href="#/">Home</a></li>
+      <li><a href="#collectionmanager">Collection</a></li>
+      <li><a href="">Deck Builder</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a ng-if="!isAuthenticated" href="">Not logged in</a><a ng-if="isAuthenticated" href=""></a></li>
+    </ul>
+  </div>
+</nav>
