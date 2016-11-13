@@ -8,6 +8,7 @@ CREATE TABLE `Deck` (
   `green` tinyint(250) DEFAULT 0,
   `red` tinyint(250) DEFAULT 0,
   `white` tinyint(250) DEFAULT 0,
+  `colorless` tinyint(250) DEFAULT 0,
   `publicity` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

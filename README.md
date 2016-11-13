@@ -1,8 +1,8 @@
 # MakeFriendsYouCanCallByNicknamesEvenWhenYouAreOld
 A Python Flask web application to create CCG decks. The first iteration will only include magic cards, but will hopefully be expanded to include other games such as Weiss|Schwartz and Android: Netrunner.
 
-<h1>How to set up and run</h1>
-<h3>Linux</h3>
+##How to set up and run
+###Linux
  1. Now we need to install a few things so open terminal and run these commands:
 
  ```
