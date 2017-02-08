@@ -5,9 +5,8 @@ from flask import json
 cursor, connection = dbconnect.connection(config)
 
 class Card:
-    def __init__(self, id, name, multiverseid, manacost, cmc, colors, types, supertypes,
-                 subtypes, rarity, text, flavor, artist, number, power, toughness, layout,
-                 imagename):
+    def __init__(self, id, name, multiverseid, manacost, cmc, colors, types, subtypes,
+                 rarity, text, flavor, artist, power, toughness, layout, imagename):
         self.id = id
         self.name = name
         self.multiverseid = multiverseid
@@ -15,26 +14,25 @@ class Card:
         self.cmc = cmc
         self.colors = colors
         self.types = types
-        self.supertypes = supertypes
         self.subtypes = subtypes
         self.rarity = rarity
         self.text = text
         self.flavor = flavor
         self.artist = artist
-        self.number = number
         self.power = power
         self.toughness = toughness
         self.layout = layout
         self.imagename = imagename
+        self.imageurl = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid="+str(multiverseid)
 
     def save(self):
         try:
             data = [self.id, self.name, self.multiverseid, self.manacost, int(self.cmc), json.dumps(self.colors),
-                    json.dumps(self.types), json.dumps(self.supertypes), json.dumps(self.subtypes), self.rarity,
-                    self.text, self.flavor, self.artist, self.number, self.power, self.toughness, self.layout, self.imagename]
-            command = ('INSERT INTO Card (id, name, multiverseid, manacost, cmc, colors, types, supertypes, ' +
-                        'subtypes, rarity, text, flavor, artist, number, power, toughness, layout, imagename) ' +
-                        'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);')
+                    json.dumps(self.types), json.dumps(self.subtypes), self.rarity, self.text, self.flavor,
+                    self.artist, self.power, self.toughness, self.layout, self.imagename, self.imageurl]
+            command = ('INSERT INTO Card (id, name, multiverseid, manacost, cmc, colors, types, ' +
+                        'subtypes, rarity, text, flavor, artist, power, toughness, layout, imagename, imageurl) ' +
+                        'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);')
             cursor.execute(command, data)
             connection.commit()
         except Exception:
@@ -97,17 +95,18 @@ class Deck:
         return '<Deck %r>' % self.name
 
     def getDetailedCardList(self):
+        command = ('SELECT Card.*, Deck_Card.count FROM Card '
+                   'JOIN Deck_Card on Card.id=Deck_Card.cardid '
+                   'WHERE Deck_Card.deckid=%s;')
+        cursor.execute(command, [self.id])
+        cards = cursor.fetchall()
         retVal = {'cards': [], 'swamp': 0, 'island': 0, 'mountain': 0, 'forest': 0, 'plains': 0}
-        for card in self.cardList:
-            if(card['cardId'] == 'swamp' or card['cardId'] == 'island' or card['cardId'] == 'forest' or card['cardId'] == 'mountain'
-                    or card['cardId'] == 'plains'):
-                retVal[card['cardId']] = card['count']
+        for card in cards:
+            if(card['id'] == 'swamp' or card['id'] == 'island' or card['id'] == 'forest' or card['id'] == 'mountain'
+                    or card['id'] == 'plains'):
+                retVal[card['id']] = card['count']
             else:
-                command = ('SELECT * FROM Card WHERE id=%s;')
-                cursor.execute(command, [card['cardId']])
-                fullCard = cursor.fetchall()[0]
-                fullCard['count'] = card['count']
-                retVal['cards'].append(fullCard)
+                retVal['cards'].append(card)
         return retVal
 
     def save(self):
