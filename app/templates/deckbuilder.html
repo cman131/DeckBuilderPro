@@ -3,6 +3,16 @@
     <link rel="stylesheet" href="../static/deckbuilder.css">
     <script src="../static/angular.min.js"></script>
     <script src="../static/deckbuilder.js"></script>
+    <script>
+        deckctrl.deck.name = {{deck.cardList}};
+        deckctrl.deck.count = {{count}};
+        deckctrl.deck.swamp = {{deck.swamp}};
+        deckctrl.deck.island = {{deck.island}};
+        deckctrl.deck.forest = {{deck.forest}};
+        deckctrl.deck.mountain = {{deck.mountain}};
+        deckctrl.deck.plains = {{deck.plains}};
+        deckctrl.deck.cards = {{deck.cardList}};
+    </script>
     <div id="app-div" class="no-select" ng-app="app">
         <div id="deck-view" ng-controller="DeckController as deckctrl">
             <input type="button" id="save" value="Save" ng-click="save()">
@@ -67,7 +77,6 @@
                     <a class="land-add land-ctrl" ng-hide="!hovering" ng-click="deckctrl.modLand('+', land)">+</a>
                     <label class="land-count land-ctrl">{[deckctrl.deck[land]]}</label>
                     <a class="land-remove land-ctrl" ng-hide="!hovering" ng-click="deckctrl.modLand('-', land)">-</a>
-                </li>
                 </li>
             </ul>
         </div>

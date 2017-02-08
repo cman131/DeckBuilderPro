@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
         <link rel="stylesheet" href="../static/deck.css">
+        <a class="btn btn-primary" href="/deck/tabletop?id={{decky['id']}}">Export To Tabletop Simulator</a>
         <ul id='deck-attributes'>
             {% for key in decky %}
                     <li class='deck-attribute'><label>{{key}} </label>{{decky[key]}}</li>
