@@ -141,6 +141,7 @@ class Deck:
                 data2.append(self.id)
                 data2.append(card['id'])
                 data2.append(card['count'])
+                print(len(card['id']))
             command2 = (command2)
             cursor.execute(command1, data1)
             cursor.execute(command2, data2)
@@ -157,7 +158,10 @@ class Deck:
     @staticmethod
     def get(id):
         cursor.execute('SELECT * FROM Deck WHERE id=%s;', [int(id)])
-        result = cursor.fetchall()[0]
+        results = cursor.fetchall()
+        if len(results) <= 0:
+            return None
+        result = results[0]
         cursor.execute('SELECT cardId,count FROM Deck_Card WHERE deckId=%s;', [int(id)])
         cardList = cursor.fetchall()
         return Deck(

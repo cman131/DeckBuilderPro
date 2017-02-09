@@ -25,7 +25,12 @@ def results():
 @app.route('/deck')
 def deck():
     if(request.args.get('id') == None):
-        return jsonify({'status': 400})
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
+    try:
+        int(request.args.get('id'))
+    except Exception:
+        print(request.args.get('id'))
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
     deck = models.Deck.get(request.args.get('id'))
     if(deck == None):
         return jsonify({'status': 404})
@@ -36,7 +41,11 @@ def deck():
 @app.route('/deck/tabletop')
 def deckTabletop():
     if(request.args.get('id') == None):
-        return jsonify({'status': 400})
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
+    try:
+        int(request.args.get('id'))
+    except Exception:
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
     deck = models.Deck.get(request.args.get('id'))
     if(deck == None):
         return jsonify({'status': 404})
@@ -77,6 +86,10 @@ def update():
         'size' not in request.json or 'colors' not in request.json or 'cards' not in request.json or
             'publicity' not in request.json):
         return jsonify({'status': 400, 'missing': request.json})
+    try:
+        int(request.json['id'])
+    except Exception:
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
     deck = models.Deck.get(int(request.json['id']))
     if deck is None:
         return jsonify({'status': 404})
@@ -94,12 +107,19 @@ def update():
 
 @app.route('/deck/builder')
 def builder():
+    count = 0
     deck = models.Deck(None, 'Untitled', 'This is a description.', 0,
                        {'black':0, 'blue':0, 'green':0, 'red':0, 'white':0}, [], 1)
     if(request.args.get('id') is not None):
+        try:
+            int(request.args.get('id'))
+        except Exception:
+            return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
         deck = models.Deck.get(request.args.get('id'))
+        if deck == None:
+            return jsonify({'status': 404})
         deck.cardList = deck.getDetailedCardList()
-        count = sum([x["count"] for x in deck.cardList])
+        count = sum([x["count"] for x in deck.cardList['cards']])
     if(deck is None):
         return jsonify({'status': 404})
     user = {'name': 'Conor', 'id': 1}
@@ -107,6 +127,8 @@ def builder():
 
 @app.route('/card/update', methods=['GET'])
 def updateCard():
+    if True:
+        return jsonify({'status': 404})
     failures = []
     models.Card.clear('DOIT')
     print('Cleared')

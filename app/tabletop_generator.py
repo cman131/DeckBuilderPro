@@ -1,6 +1,6 @@
 from PIL import Image
 from io import BytesIO
-from app import tabletop_entity
+from app import tabletop_entity, config
 import json, glob, os, requests, base64
 
 class TableTopGenerator:
@@ -51,7 +51,7 @@ class TableTopGenerator:
             imgUrl = requests.post(
                 "https://api.imgur.com/3/image",
                 headers={
-                    'Authorization': 'Client-ID f3f49069e038415'
+                    'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID
                 },
                 data=payload
             )
