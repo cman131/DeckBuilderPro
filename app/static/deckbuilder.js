@@ -7,22 +7,22 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 
 app.factory('Deck', function() {
     return {
-      id: null,
-      name: 'Untitled',
-      cards: [],
-      count: 0,
+      id: loadedDeck.id,
+      name: loadedDeck.name,
+      cards: loadedDeck.cardList.cards,
+      count: loadedCount,
       colors: {
-        black: 0,
-        blue: 0,
-        green: 0,
-        red: 0,
-        white: 0
+        black: loadedDeck.black,
+        blue: loadedDeck.blue,
+        green: loadedDeck.green,
+        red: loadedDeck.red,
+        white: loadedDeck.white
       },
-      swamp: 0,
-      island: 0,
-      forest: 0,
-      mountain: 0,
-      plains: 0
+      swamp: loadedDeck.cardList.swamp,
+      island: loadedDeck.cardList.island,
+      forest: loadedDeck.cardList.forest,
+      mountain: loadedDeck.cardList.mountain,
+      plains: loadedDeck.cardList.plains
     }
 });
 
@@ -30,9 +30,17 @@ app.filter('cardType', function() {
     return function(input, targetType){
         output = [];
         for(var i in input) {
-            if(input[i].type.toLowerCase().indexOf(targetType.toLowerCase())>-1 &&
-            (targetType=='creature' || input[i].type.toLowerCase().indexOf('creature')<=-1)) {
-                output.push(input[i]);
+            if (input[i]['types'] != null) {
+                if(input[i].types.toLowerCase().indexOf(targetType.toLowerCase())>-1 &&
+                (targetType=='creature' || input[i].types.toLowerCase().indexOf('creature')<=-1)) {
+                    output.push(input[i]);
+                }
+            }
+            else {
+                if(input[i].type.toLowerCase().indexOf(targetType.toLowerCase())>-1 &&
+                (targetType=='creature' || input[i].type.toLowerCase().indexOf('creature')<=-1)) {
+                    output.push(input[i]);
+                }
             }
         }
         return output;
@@ -53,6 +61,7 @@ app.controller('CardController', function($http, $scope, Deck) {
             Deck.cards[index]['count'] += 1;
         } else {
             card['count'] = 1;
+            card['types'] = card['type']
             Deck.cards.push(card);
         }
         Deck.count+=1;

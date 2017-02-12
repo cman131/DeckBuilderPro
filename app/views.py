@@ -110,7 +110,8 @@ def update():
 def builder():
     count = 0
     deck = models.Deck(None, 'Untitled', 'This is a description.', 0,
-                       {'black':0, 'blue':0, 'green':0, 'red':0, 'white':0}, [], 1)
+                       {'black':0, 'blue':0, 'green':0, 'red':0, 'white':0}, True, [])
+    deck.cardList = {'cards': [], 'swamp': 0, 'island': 0, 'mountain': 0, 'forest': 0, 'plains': 0}
     if(request.args.get('id') is not None):
         try:
             int(request.args.get('id'))
@@ -120,9 +121,12 @@ def builder():
         if deck == None:
             return jsonify({'status': 404})
         deck.cardList = deck.getDetailedCardList()
-        count = sum([x["count"] for x in deck.cardList['cards']])
+        count = sum([x["count"] for x in deck.cardList['cards']]) +\
+                deck.cardList['swamp'] + deck.cardList['island'] + deck.cardList['mountain'] +\
+                deck.cardList['plains'] + deck.cardList['forest']
     if(deck is None):
         return jsonify({'status': 404})
+    print(deck.cardList['plains'])
     user = {'name': 'Conor', 'id': 1}
     return render_template('deckbuilder.html', title='DeckBuilder', user=user, config=config, decky=deck.__dict__(), count=count)
 

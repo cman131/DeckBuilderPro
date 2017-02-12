@@ -1,6 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
     <link rel="stylesheet" href="../static/deckbuilder.css">
+    <script>
+        var loadedDeck = {{decky | safe}};
+        var loadedCount = {{count}};
+    </script>
     <script src="../static/angular.min.js"></script>
     <script src="../static/deckbuilder.js"></script>
     <div id="app-div" class="no-select" ng-app="app">
