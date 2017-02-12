@@ -6,24 +6,19 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 }]);
 
 app.factory('Deck', function() {
+    var cardList = loadedDeck.cardList == null ? {'cards': [], 'swamp': 0, 'island': 0, 'forest': 0, 'mountain': 0, 'plains': 0} : loadedDeck.cardList;
     return {
-      id: loadedDeck.id,
+      id: loadedDeck.id == '' ? loadedDeck.id : null,
       name: loadedDeck.name,
-      cards: loadedDeck.cardList.cards,
+      cards: cardList.cards,
       count: loadedCount,
-      colors: {
-        black: loadedDeck.black,
-        blue: loadedDeck.blue,
-        green: loadedDeck.green,
-        red: loadedDeck.red,
-        white: loadedDeck.white
-      },
-      swamp: loadedDeck.cardList.swamp,
-      island: loadedDeck.cardList.island,
-      forest: loadedDeck.cardList.forest,
-      mountain: loadedDeck.cardList.mountain,
-      plains: loadedDeck.cardList.plains
-    }
+      colors: loadedDeck.colors,
+      swamp: cardList.swamp,
+      island: cardList.island,
+      forest: cardList.forest,
+      mountain: cardList.mountain,
+      plains: cardList.plains
+    };
 });
 
 app.filter('cardType', function() {
@@ -98,7 +93,7 @@ app.controller('DeckController', function($scope, $http, $timeout, Deck) {
             Deck[type] -= 1
         }
     };
-    $scope.edit = false;
+    $scope.edit = loadedDeck['id'] != '' && loadedDeck['id'] != null;
     $scope.showEditor = function() {
         $scope.edit = true;
         var textbox = document.getElementById("deck-name-input");
@@ -122,6 +117,7 @@ app.controller('DeckController', function($scope, $http, $timeout, Deck) {
             }
         }
         cards = cards.concat(Deck.cards);
+        console.log(Deck.id);
         if(Deck.id==null) {
             $http.post('./create', {
                 name: Deck.name,

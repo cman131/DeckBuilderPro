@@ -141,7 +141,6 @@ class Deck:
                 data2.append(self.id)
                 data2.append(card['id'])
                 data2.append(card['count'])
-            print(data2)
             command2 = (command2)
             cursor.execute(command1, data1)
             cursor.execute(command2, data2)
