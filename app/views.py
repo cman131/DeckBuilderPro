@@ -95,13 +95,14 @@ def update():
         return jsonify({'status': 404})
 
     # Make a temporary object with the given data and save it to the db
+    cards = request.json['cards']
     temp = models.Deck(deck.id,
                     request.json['name'],
                     request.json['description'],
                     request.json['size'],
                     request.json['colors'],
                     request.json['publicity'],
-                    request.json['cards'])
+                    cards)
     status = temp.save()
     return jsonify({'status': 200 if status else 500, 'id': temp.id})
 
@@ -137,6 +138,13 @@ def updateCard():
     sets = response.json()
     print('Loaded')
     cardCount = 0
+    sets['LandParty'] = {'name': 'LandParty',
+                         'cards': [
+                             getLandCard('swamp', 0,),
+                             getLandCard('island', 0),
+                             getLandCard('forest', 0),
+                             getLandCard('mountain', 0),
+                             getLandCard('plains', 0)]}
     for set in sets:
         print(' - Loading Set: ' + sets[set]['name'])
         for card in sets[set]['cards']:
@@ -164,6 +172,8 @@ def updateCard():
                 card['flavor'] = ''
             if 'types' not in card:
                 card['types'] = []
+            if 'layout' not in card:
+                card['layout'] = ''
             if 'imagename' not in card:
                 card['imagename'] = ''
             newCard = models.Card(card['id'], card['name'], card['multiverseid'], card['manaCost'], card['cmc'], card['colors'],
@@ -180,11 +190,11 @@ def updateCard():
 
 # Private
 def getLandCard(name, count):
-    lands = {'swamp': {'name': 'Swamp', 'multiverseid': '402061'},
-             'island': {'name': 'Island', 'multiverseid': '401927'},
-             'mountain': {'name': 'Mountain', 'multiverseid': '401962'},
-             'plains': {'name': 'Plains', 'multiverseid': '401994'},
-             'forest': {'name': 'Forest', 'multiverseid': '401889'}}
+    lands = {'swamp': {'name': 'swamp', 'id': 'swamp', 'multiverseid': '402061'},
+             'island': {'name': 'island', 'id': 'island', 'multiverseid': '401927'},
+             'mountain': {'name': 'mountain', 'id': 'mountain', 'multiverseid': '401962'},
+             'plains': {'name': 'plains', 'id': 'plains', 'multiverseid': '401994'},
+             'forest': {'name': 'forest', 'id': 'forest', 'multiverseid': '401889'}}
     land = lands[name]
     land['count'] = count
     land['imageurl'] = "http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid="+str(land['multiverseid'])
