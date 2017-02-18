@@ -93,3 +93,6 @@ ENV/
 
 #Config
 app/config.py
+
+#resource images
+app/static/images
