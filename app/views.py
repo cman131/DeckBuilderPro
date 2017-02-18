@@ -127,6 +127,14 @@ def builder():
     user = {'name': 'Conor', 'id': 1}
     return render_template('deckbuilder.html', title='DeckBuilder', user=user, config=config, decky=deck.__dict__(), count=count)
 
+@app.route('/weiss/image/pull', methods=['GET'])
+def getWeissImages():
+    if True:
+        return jsonify({'status': 404})
+    cards = models.WeissCard.getAllImageless()
+    tabletop_generator.TableTopGenerator.getWeissImages(cards)
+    return jsonify({'status': 200})
+
 @app.route('/card/update', methods=['GET'])
 def updateCard():
     if True:

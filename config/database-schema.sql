@@ -39,3 +39,22 @@ CREATE TABLE `Card` (
   `imageurl` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) Engine=InnoDB DEFAULT CHARSET utf8;
+CREATE TABLE `WeissDeck` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `universe` varchar(120) DEFAULT NULL,
+  `blue` tinyint(250) DEFAULT 0,
+  `green` tinyint(250) DEFAULT 0,
+  `red` tinyint(250) DEFAULT 0,
+  `yellow` tinyint(250) DEFAULT 0,
+  `publicity` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `WeissDeck_WeissCard` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `deckid` bigint(20) NOT NULL,
+  `cardid` varchar(100) NOT NULL,
+  `count` tinyint(120) unsigned DEFAULT 1 NOT NULL,
+  PRIMARY KEY (`id`)
+ ) Engine=InnoDB DEFAULT CHARSET utf8;

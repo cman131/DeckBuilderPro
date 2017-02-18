@@ -4,6 +4,208 @@ from flask import json
 
 cursor, connection = dbconnect.connection(config)
 
+class WeissCard:
+    def __init__(self, id, name, number, rarity, type, color, level, cost, power, soul, c_trigger, traits, text, flavor, imageurl):
+        self.id = id
+        self.name = name
+        self.number = number
+        self.rarity = rarity
+        self.type = type
+        self.color = color
+        self.level = level
+        self.cost = cost
+        self.power = power
+        self.soul = soul
+        self.c_trigger = c_trigger
+        self.traits = traits
+        self.text = text
+        self.flavor = flavor
+        self.imageurl = imageurl
+
+    def save(self, id=None):
+        try:
+            data = [self.name, self.number, self.rarity, self.type, self.color, self.level, self.cost,
+                    self.power, self.soul, self.c_trigger, self.traits, self.text, self.flavor, self.imageurl, id]
+            command = ('INSERT INTO wsdb_eng (name, number, rarity, type, color, level, ' +
+                        'cost, power, soul, c_trigger, traits, text, flavor, imageurl, pid) ' +
+                        'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);')
+            if id != None:
+                command = ('UPDATE wsdb_eng SET name=%s' +
+                            ', number=%s' +
+                            ', rarity=%s' +
+                            ', type=%s' +
+                            ', color=%s' +
+                            ', level=%s' +
+                            ', cost=%s' +
+                            ', power=%s' +
+                            ', soul=%s' +
+                            ', c_trigger=%s' +
+                            ', traits=%s' +
+                            ', text=%s' +
+                            ', flavor=%s' +
+                            ', imageurl=%s' +
+                            ' WHERE pid=%s;')
+            cursor.execute(command, data)
+            connection.commit()
+        except Exception:
+            return self.name
+        return ''
+
+    @staticmethod
+    def load(id):
+        data = [id]
+        command = ('SELECT * FROM WeissCard WHERE pid=%s;')
+        cursor.execute(command, data)
+        results = cursor.fetchall()
+        if len(results) == 0:
+            return None
+        result = results[0]
+        return Card(id, result['name'], result['number'], result['rarity'], result['type'],
+                    result['color'], result['level'], result['cost'],
+                    result['power'], result['soul'], result['c_trigger'], result['traits'], result['text'],
+                    result['flavor'], result['imageurl'])
+    @staticmethod
+    def clear(yaSure):
+        if yaSure=='DOIT':
+            command = ('DELETE FROM Card WHERE pid!=%s')
+            cursor.execute(command, ['0'])
+            connection.commit()
+
+    #Static Methods
+
+    @staticmethod
+    def getAllImageless():
+        command = ("SELECT * FROM wsdb_eng WHERE imageurl IS NULL;")
+        cursor.execute(command, [])
+        results = cursor.fetchall()
+        return [WeissCard(result['pid'], result['name'], result['number'], result['rarity'], result['type'],
+                     result['color'], result['level'], result['cost'], result['power'], result['soul'],
+                     result['c_trigger'], result['traits'], result['text'], result['flavor'], '') for result in results]
+
+class WeissDeck:
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(45))
+    set = db.column(db.String(45))
+    description = db.Column(db.String(45))
+    blue = db.Column(db.Integer)
+    green = db.Column(db.Integer)
+    red = db.Column(db.Integer)
+    yellow = db.Column(db.Integer)
+    publicity = db.Column(db.Integer)
+    """
+
+    def __init__(self, id, name, description, universe, colors, publicity, cardList=[]):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.universe = universe
+        self.yellow = 1 if int(colors['yellow']) > 0 else 0
+        self.blue = 1 if int(colors['blue']) > 0 else 0
+        self.green = 1 if int(colors['green']) > 0 else 0
+        self.red = 1 if int(colors['red']) > 0 else 0
+        self.publicity = publicity
+        self.cardList = cardList
+
+    def __dict__(self):
+        return {'id': self.id,
+                'name': self.name,
+                'description': self.description,
+                'universe': self.universe,
+                'colors': {'blue':self.blue, 'green':self.green, 'red':self.red, 'yellow':self.yellow},
+                'cardList': self.cardList}
+
+    def __repr__(self):
+        return '<Deck %r>' % self.name
+
+    def getDetailedCardList(self):
+        command = ('SELECT wsdb_eng.*, WeissDeck_WeissCard.count FROM Card '
+                   'JOIN WeissDeck_WeissCard on wsdb_eng.id=WeissDeck_WeissCard.cardid '
+                   'WHERE WeissDeck_WeissCard.deckid=%s;')
+        cursor.execute(command, [self.id])
+        retVal = {'cards': cursor.fetchall()}
+        return retVal
+
+    def save(self):
+        data = [self.name, self.description, int(self.universe), int(self.black), int(self.blue),
+                int(self.green), int(self.red), int(self.yellow),
+                int(self.publicity)]
+        command = ('INSERT INTO WeissDeck (name, description, universe, ' +
+                    'blue, green, red, yellow, publicity) ' +
+                    'VALUES (%s, %s, %s, %s, %s, %s, %s, %s);')
+        if(self.id != None):
+            data.append(int(self.id))
+            command = ('UPDATE WeissDeck SET name=%s' +
+                        ', description=%s' +
+                        ', universe=%s' +
+                        ', blue=%s' +
+                        ', green=%s' +
+                        ', red=%s' +
+                        ', yellow=%s' +
+                        ', publicity=%s' +
+                        ' WHERE id=%s;')
+        cursor.execute(command, data)
+        connection.commit()
+        self.id = self.id if self.id is not None else connection.insert_id()
+        if self.cardList!=[]:
+            command1 = ('DELETE FROM WeissDeck_WeissCard WHERE deckId=%s;')
+            data1 = [self.id]
+            command2 = ''
+            data2 = []
+            for card in self.cardList:
+                command2 += 'INSERT INTO WeissDeck_WeissCard (deckId, cardId, count) VALUES (%s, %s, %s);'
+                data2.append(self.id)
+                data2.append(card['id'])
+                data2.append(card['count'])
+            command2 = (command2)
+            cursor.execute(command1, data1)
+            cursor.execute(command2, data2)
+            connection.commit()
+        return True
+
+    #Static Methods
+
+    @staticmethod
+    def all():
+        cursor.execute('SELECT * FROM WeissDeck;')
+        return cursor.fetchall()
+
+    @staticmethod
+    def get(id):
+        cursor.execute('SELECT * FROM WeissDeck WHERE id=%s;', [int(id)])
+        results = cursor.fetchall()
+        if len(results) <= 0:
+            return None
+        result = results[0]
+        cursor.execute('SELECT cardId,count FROM WeissDeck_WeissCard WHERE deckId=%s;', [int(id)])
+        cardList = cursor.fetchall()
+        return Deck(
+            id,
+            result['name'],
+            result['description'],
+            result['size'],
+            {
+                'blue':result['blue'],
+                'green':result['green'],
+                'red':result['red'],
+                'yellow':result['yellow']
+                        },
+            result['publicity'],
+            cardList)
+
+    @staticmethod
+    def search(term, colors):
+        term = '%'+term+'%'
+        colorNames = ['blue', 'green', 'red', 'yellow']
+        colorstr = ''
+        for color in colorNames:
+            if colors[color]==1:
+                colorstr += ' AND '+color+'=1'
+        command = ('SELECT * FROM WeissDeck WHERE (name like %s OR description like %s) AND (publicity=1'+colorstr+');')
+        data = [term, term]
+        cursor.execute(command, data)
+        return cursor.fetchall()
+
 class Card:
     def __init__(self, id, name, multiverseid, manacost, cmc, colors, types, subtypes,
                  rarity, text, flavor, artist, power, toughness, layout, imagename):
@@ -42,7 +244,7 @@ class Card:
     @staticmethod
     def load(id):
         data = [id]
-        command = ('SECLECT * FROM Card WHERE id=%s;')
+        command = ('SELECT * FROM Card WHERE id=%s;')
         cursor.execute(command, data)
         result = cursor.fetchall()[0]
         return Card(id, result['name'], result['multiverseid'], result['manacost'], result['cmc'],
