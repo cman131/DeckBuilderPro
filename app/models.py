@@ -163,8 +163,8 @@ class WeissDeck:
         return '<Deck %r>' % self.name
 
     def getDetailedCardList(self):
-        command = ('SELECT wsdb_eng.*, WeissDeck_WeissCard.count FROM Card '
-                   'JOIN WeissDeck_WeissCard on wsdb_eng.id=WeissDeck_WeissCard.cardid '
+        command = ('SELECT wsdb_eng.*, WeissDeck_WeissCard.count FROM wsdb_eng '
+                   'JOIN WeissDeck_WeissCard on wsdb_eng.pid=WeissDeck_WeissCard.cardid '
                    'WHERE WeissDeck_WeissCard.deckid=%s;')
         cursor.execute(command, [self.id])
         retVal = {'cards': cursor.fetchall()}
@@ -227,12 +227,11 @@ class WeissDeck:
         result = results[0]
         cursor.execute('SELECT cardId,count FROM WeissDeck_WeissCard WHERE deckId=%s;', [int(id)])
         cardList = cursor.fetchall()
-        return Deck(
+        return WeissDeck(
             id,
             result['name'],
             result['description'],
             result['universe'],
-            result['size'],
             {
                 'blue':result['blue'],
                 'green':result['green'],
@@ -250,8 +249,8 @@ class WeissDeck:
         for color in colorNames:
             if colors[color]==1:
                 colorstr += ' AND '+color+'=1'
-        command = ('SELECT * FROM WeissDeck WHERE (name like %s OR description like %s) AND (publicity=1'+colorstr+');')
-        data = [term, term]
+        command = ('SELECT * FROM WeissDeck WHERE (name like %s OR description like %s OR universe like %s) AND (publicity=1'+colorstr+');')
+        data = [term, term, term]
         cursor.execute(command, data)
         return cursor.fetchall()
 

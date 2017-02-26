@@ -129,11 +129,55 @@ def builder():
 
 # Weiss Schwarz
 
+@app.route('/wresults')
+def wresults():
+    term = request.args.get('term')
+    colors = json.loads(request.args.get('colors'))
+    user = {'name': 'Conor', 'id': 1}
+
+    results = models.WeissDeck.search(term, colors)
+    return render_template('wresults.html', title='Results', user=user, results=results, searchTerm=term, searchColors=colors)
+
+@app.route('/wdeck')
+def wdeck():
+    if(request.args.get('id') == None):
+        return jsonify({'status': 400, 'message': 'Missing id. Go home, you\'re clearly drunk.'})
+    try:
+        int(request.args.get('id'))
+    except Exception:
+        print(request.args.get('id'))
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
+    deck = models.WeissDeck.get(request.args.get('id'))
+    if(deck == None):
+        return jsonify({'status': 404})
+    cards = deck.getDetailedCardList()
+    user = {'name': 'Conor', 'id': 1}
+    return render_template('wdeck.html', title=deck.name, user=user, config=config, decky=deck.__dict__(), cards=cards)
+
+@app.route('/wdeck/tabletop')
+def wdeckTabletop():
+    if(request.args.get('id') == None):
+        return jsonify({'status': 400, 'message': 'Missing id. Go home, you\'re clearly drunk.'})
+    try:
+        int(request.args.get('id'))
+    except Exception:
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
+    deck = models.WeissDeck.get(request.args.get('id'))
+    if(deck == None):
+        return jsonify({'status': 404})
+    cardDetails = deck.getDetailedCardList()
+    basePath = request.url.split('?')[0].replace(request.path, '')
+    for card in cardDetails["cards"]:
+        card['imageurl'] = 'app/' + card['imageurl']
+    outputJson = tabletop_generator.TableTopGenerator.generateTableTopJson(deck.name, deck.description, cardDetails["cards"], 'weiss', True)
+    return Response(outputJson,
+             mimetype='application/json',
+             headers={'Content-Disposition': 'attachment;filename='+deck.name.replace(' ', '_')+'.json'})
+
 @app.route('/wdeck/create', methods=['POST'])
 def wcreate():
-    if('name' not in request.json or 'description' not in request.json or
-        'size' not in request.json or 'colors' not in request.json or 'cards' not in request.json or
-            'publicity' not in request.json or 'universe' not in request.json):
+    if('name' not in request.json or 'description' not in request.json or 'colors' not in request.json
+            or 'cards' not in request.json or 'publicity' not in request.json or 'universe' not in request.json):
         return jsonify({'status': 400, 'missing': request.json['size']})
 
     # Make a temporary object with the given data and save it to the db
@@ -145,6 +189,31 @@ def wcreate():
                     request.json['cards'])
     status = temp.save()
     return jsonify({'status': 200 if status else 400, 'id': temp.id})
+
+@app.route('/wdeck/update', methods=['PUT'])
+def wupdate():
+    if('id' not in request.json or 'name' not in request.json or 'description' not in request.json
+            or 'colors' not in request.json or 'cards' not in request.json or
+            'publicity' not in request.json) or 'universe' not in request.json:
+        return jsonify({'status': 400, 'missing': request.json})
+    try:
+        int(request.json['id'])
+    except Exception:
+        return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
+    deck = models.WeissDeck.get(int(request.json['id']))
+    if deck is None:
+        return jsonify({'status': 404})
+
+    # Make a temporary object with the given data and save it to the db
+    temp = models.Deck(deck.id,
+                    request.json['name'],
+                    request.json['description'],
+                    request.json['universe'],
+                    request.json['colors'],
+                    request.json['publicity'],
+                    request.json['cards'])
+    status = temp.save()
+    return jsonify({'status': 200 if status else 500, 'id': temp.id})
 
 @app.route('/wdeck/builder')
 def wbuilder():

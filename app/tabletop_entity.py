@@ -49,17 +49,17 @@ class TableTopObjectState(TableTopSerializable):
         self.CustomDeck = {}
         self.ContainedObjects = []
 
-    def addDeck(self, deckUrl, cards = []):
+    def addDeck(self, deckUrl, cards = [], cardBackKey = 'magic'):
         if (len(cards) > 69):
             raise Exception("No! only 69 cards in a deck.")
 
         deckId = len(self.CustomDeck) + 1
-        self.CustomDeck[deckId] = TableTopDeck(deckUrl)
+        self.CustomDeck[deckId] = TableTopDeck(deckUrl, cardBackKey)
         ind = 0
         for card in cards:
             cardId = str(deckId) + (str(ind + 1) if ind + 1 >= 10 else "0"+str(ind + 1))
             self.DeckIDs.append(cardId)
-            self.ContainedObjects.append(TableTopCard(card, cardId))
+            self.ContainedObjects.append(TableTopCard(card['name'], cardId, card['text']))
             ind += 1
 
 class TableTopColor(TableTopSerializable):
@@ -81,13 +81,16 @@ class TableTopTransform(TableTopSerializable):
         self.scaleZ = scaleZ
 
 class TableTopDeck(TableTopSerializable):
-    def __init__(self, faceUrl):
+    def __init__(self, faceUrl, cardBackKey="magic"):
+        cardBackUrls = {'magic': "http://i.imgur.com/P7qYTcI.png",
+                        'weiss': "http://imgur.com/6pIaFqR.jpg"}
         self.FaceURL = faceUrl
-        self.BackURL = "http://i.imgur.com/P7qYTcI.png"
+        self.BackURL = cardBackUrls[cardBackKey]
 
 class TableTopCard(TableTopSerializable):
-    def __init__(self, name, cardId):
+    def __init__(self, name, cardId, description=''):
         self.Name = "Card"
         self.Nickname = name
         self.CardID = cardId
+        self.Description = description
         self.Transform = TableTopTransform(2.5, 2.5, 3.5, 0, 180, 180, 1.0, 1.0, 1.0)

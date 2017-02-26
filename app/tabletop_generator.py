@@ -77,7 +77,7 @@ class TableTopGenerator:
                 print(imgSaveName + ' retrieved')
 
     @staticmethod
-    def generateTableTopJson(name, description, cards):
+    def generateTableTopJson(name, description, cards, cardBackKey='magic', local=False):
         cardSets = [cards[x:x+69] for x in range(0, len(cards), 69)]
         tableTopObject = tabletop_entity.TableTopObjectState(name, description)
 
@@ -86,11 +86,15 @@ class TableTopGenerator:
             images = []
             tableCards = []
             for card in cardset:
-                imgResponse = requests.get(card["imageurl"])
-                img = Image.open(BytesIO(imgResponse.content))
+                img = None
+                if not local:
+                    imgResponse = requests.get(card["imageurl"])
+                    img = Image.open(BytesIO(imgResponse.content))
+                else:
+                    img = Image.open(card['imageurl'])
                 for i in range(card["count"]):
                     images.append(img.resize(size, Image.ANTIALIAS))
-                    tableCards.append(card["name"])
+                    tableCards.append(card)
 
             dimensions = (size[0]*10, size[1]*7)
             #creates a new empty image, RGB mode, and size 4096 by 4096.
@@ -129,5 +133,5 @@ class TableTopGenerator:
             response = imgUrl.json()
             if not response['success']:
                 raise Exception("Image upload failed")
-            tableTopObject.addDeck(response['data']['link'], tableCards)
+            tableTopObject.addDeck(response['data']['link'], tableCards, cardBackKey)
         return tabletop_entity.TableTopSave([tableTopObject]).getJson()
