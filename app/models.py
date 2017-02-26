@@ -51,27 +51,41 @@ class WeissCard:
             return self.name
         return ''
 
+    # Static Methods
+
     @staticmethod
     def load(id):
         data = [id]
-        command = ('SELECT * FROM WeissCard WHERE pid=%s;')
+        command = ('SELECT * FROM wsdb_eng WHERE pid=%s;')
         cursor.execute(command, data)
         results = cursor.fetchall()
         if len(results) == 0:
             return None
         result = results[0]
-        return Card(id, result['name'], result['number'], result['rarity'], result['type'],
+        return WeissCard(id, result['name'], result['number'], result['rarity'], result['type'],
                     result['color'], result['level'], result['cost'],
                     result['power'], result['soul'], result['c_trigger'], result['traits'], result['text'],
                     result['flavor'], result['imageurl'])
+
+    @staticmethod
+    def loadAll(isDict=False):
+        data = []
+        command = ('SELECT * FROM wsdb_eng;')
+        cursor.execute(command, data)
+        results = cursor.fetchall()
+        if isDict:
+            return results
+        return [WeissCard(result['pid'], result['name'], result['number'], result['rarity'], result['type'],
+                    result['color'], result['level'], result['cost'],
+                    result['power'], result['soul'], result['c_trigger'], result['traits'], result['text'],
+                    result['flavor'], result['imageurl']) for result in results]
+
     @staticmethod
     def clear(yaSure):
         if yaSure=='DOIT':
             command = ('DELETE FROM Card WHERE pid!=%s')
             cursor.execute(command, ['0'])
             connection.commit()
-
-    #Static Methods
 
     @staticmethod
     def getAllImageless():
@@ -81,6 +95,36 @@ class WeissCard:
         return [WeissCard(result['pid'], result['name'], result['number'], result['rarity'], result['type'],
                      result['color'], result['level'], result['cost'], result['power'], result['soul'],
                      result['c_trigger'], result['traits'], result['text'], result['flavor'], '') for result in results]
+
+class WeissSet:
+    """
+    id = db.Column(db.String(5), primary_key=True)
+    name = db.Column(db.String(100))
+    """
+
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+
+    @staticmethod
+    def load(id):
+        data = [id]
+        command = ('SELECT * FROM WeissSet WHERE id=%s;')
+        cursor.execute(command, data)
+        results = cursor.fetchall()
+        if len(results) <= 0:
+            return None
+        result = results[0]
+        return WeissSet(result['id'], result['name'])
+
+    # Static Methods
+    @staticmethod
+    def loadAll():
+        data = []
+        command = ('SELECT * FROM WeissSet;')
+        cursor.execute(command, data)
+        results = cursor.fetchall()
+        return [WeissSet(result['id'], result['name']) for result in results]
 
 class WeissDeck:
     """
@@ -127,9 +171,13 @@ class WeissDeck:
         return retVal
 
     def save(self):
-        data = [self.name, self.description, int(self.universe), int(self.black), int(self.blue),
-                int(self.green), int(self.red), int(self.yellow),
-                int(self.publicity)]
+        data = [self.name, self.description, self.universe, int(self.blue),
+                int(self.green), int(self.red), int(self.yellow), int(self.publicity)]
+        cursor.execute('SELECT COUNT(name) AS count FROM WeissSet WHERE name=%s', [self.universe])
+        unicount = cursor.fetchall()[0]
+        if unicount['count'] <= 0:
+            return False
+
         command = ('INSERT INTO WeissDeck (name, description, universe, ' +
                     'blue, green, red, yellow, publicity) ' +
                     'VALUES (%s, %s, %s, %s, %s, %s, %s, %s);')
@@ -155,7 +203,7 @@ class WeissDeck:
             for card in self.cardList:
                 command2 += 'INSERT INTO WeissDeck_WeissCard (deckId, cardId, count) VALUES (%s, %s, %s);'
                 data2.append(self.id)
-                data2.append(card['id'])
+                data2.append(card['pid'])
                 data2.append(card['count'])
             command2 = (command2)
             cursor.execute(command1, data1)
@@ -183,6 +231,7 @@ class WeissDeck:
             id,
             result['name'],
             result['description'],
+            result['universe'],
             result['size'],
             {
                 'blue':result['blue'],

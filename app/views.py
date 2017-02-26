@@ -127,6 +127,52 @@ def builder():
     user = {'name': 'Conor', 'id': 1}
     return render_template('deckbuilder.html', title='DeckBuilder', user=user, config=config, decky=deck.__dict__(), count=count)
 
+# Weiss Schwarz
+
+@app.route('/wdeck/create', methods=['POST'])
+def wcreate():
+    if('name' not in request.json or 'description' not in request.json or
+        'size' not in request.json or 'colors' not in request.json or 'cards' not in request.json or
+            'publicity' not in request.json or 'universe' not in request.json):
+        return jsonify({'status': 400, 'missing': request.json['size']})
+
+    # Make a temporary object with the given data and save it to the db
+    temp = models.WeissDeck(None, request.json['name'],
+                    request.json['description'],
+                    request.json['universe'],
+                    request.json['colors'],
+                    request.json['publicity'],
+                    request.json['cards'])
+    status = temp.save()
+    return jsonify({'status': 200 if status else 400, 'id': temp.id})
+
+@app.route('/wdeck/builder')
+def wbuilder():
+    count = 0
+    deck = models.WeissDeck('', 'Untitled', 'This is a description.', '',
+                       {'blue':0, 'green':0, 'red':0, 'yellow':0}, True, [])
+    if(request.args.get('id') is not None):
+        try:
+            int(request.args.get('id'))
+        except Exception:
+            return jsonify({'status': 400, 'message': 'Bad id. Go home, you\'re clearly drunk.'})
+        deck = models.wDeck.get(request.args.get('id'))
+        if deck == None:
+            return jsonify({'status': 404})
+        deck.cardList = deck.getDetailedCardList()
+        count = sum([x["count"] for x in deck.cardList['cards']])
+    allSets = [set.__dict__ for set in models.WeissSet.loadAll()]
+    user = {'name': 'Conor', 'id': 1}
+    return render_template('wdeckbuilder.html', title='DeckBuilder', user=user, config=config, decky=deck.__dict__(), count=count, allSets=allSets)
+
+@app.route('/wcard/all')
+def allWCards():
+    print('Retrieving Cards.')
+    cards = models.WeissCard.loadAll(True)
+    print('Got all the cards!')
+    return jsonify({'status': 200, 'data': cards})
+
+#DB Updaters - leave disabled
 @app.route('/weiss/image/pull', methods=['GET'])
 def getWeissImages():
     if True:

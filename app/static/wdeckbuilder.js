@@ -6,36 +6,62 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 }]);
 
 app.factory('Deck', function() {
-    var cardList = loadedDeck.cardList == null ? {'cards': [], 'swamp': 0, 'island': 0, 'forest': 0, 'mountain': 0, 'plains': 0} : loadedDeck.cardList;
+    var cardList = loadedDeck.cardList == null ? [] : loadedDeck.cardList;
+    var universe = allSets[0];
+    if (loadedDeck.universe != null && loadedDeck.universe != "") {
+        for (i in allSets) {
+            if (allSets[i].name == loadedDeck.universe) {
+                universe = allSets[i];
+                break;
+            }
+        }
+    }
     return {
       id: loadedDeck.id == '' ? null : loadedDeck.id,
       name: loadedDeck.name,
-      cards: cardList.cards,
+      cards: cardList,
       count: loadedCount,
       colors: loadedDeck.colors,
-      swamp: cardList.swamp,
-      island: cardList.island,
-      forest: cardList.forest,
-      mountain: cardList.mountain,
-      plains: cardList.plains
+      universe: universe
     };
+});
+
+app.filter('distinct', function() {
+    return function(input, propName){
+        var dic = {};
+        for(var i in input) {
+            dic[input[i][propName]] = input[i];
+        }
+        var output = [];
+        for(var i in dic) {
+            output.push(dic[i]);
+        }
+        return output;
+    }
 });
 
 app.filter('cardType', function() {
     return function(input, targetType){
-        output = [];
+        var output = [];
         for(var i in input) {
-            if (input[i]['types'] != null) {
-                if(input[i].types.toLowerCase().indexOf(targetType.toLowerCase())>-1 &&
-                (targetType=='creature' || input[i].types.toLowerCase().indexOf('creature')<=-1)) {
-                    output.push(input[i]);
-                }
+            if (input[i]['type'] == targetType) {
+                output.push(input[i]);
             }
-            else {
-                if(input[i].type.toLowerCase().indexOf(targetType.toLowerCase())>-1 &&
-                (targetType=='creature' || input[i].type.toLowerCase().indexOf('creature')<=-1)) {
-                    output.push(input[i]);
-                }
+        }
+        return output;
+    };
+});
+
+app.filter('cardSet', function() {
+    return function(input, targetSet){
+        var output = [];
+        for(var i in input) {
+            var setId = input[i]['number'].substring(0, 3).replace('/', '');
+            var matches = allSets.filter(function(obj) {
+                return obj.id == setId && obj.name == targetSet.name;
+            });
+            if (matches.length > 0) {
+                output.push(input[i]);
             }
         }
         return output;
@@ -44,33 +70,28 @@ app.filter('cardType', function() {
 
 app.controller('CardController', function($http, $scope, Deck) {
     this.list = [];
-    this.set = 'M15';
-    var menu = this;
-    $http.get("http://mtgjson.com/json/AllSets.json").success(function(data) {
-      menu.list = data;
+    menu = this;
+    $http.get("../wcard/all").success(function(data) {
+      menu.list = data.data;
     });
+    this.sets = allSets;
     this.query = "";
+    this.deck = Deck;
     this.add = function(card) {
         var index = Deck.cards.indexOf(card);
         if(index > -1) {
             Deck.cards[index]['count'] += 1;
         } else {
             card['count'] = 1;
-            card['types'] = card['type']
             Deck.cards.push(card);
         }
         Deck.count+=1;
-        for(color in card.colors) {
-            if(Deck.colors[card.colors[color].toLowerCase()]!=null) {
-                Deck.colors[card.colors[color].toLowerCase()] += 1;
-            }
-        }
+        Deck.colors[card.color.toLowerCase()] += 1;
     }
 });
 
 app.controller('DeckController', function($scope, $http, $timeout, Deck) {
     this.deck = Deck;
-    $scope.lands = ['swamp', 'island', 'forest', 'mountain', 'plains'];
     this.remove = function(card) {
         var index = Deck.cards.indexOf(card);
         if(index > -1) {
@@ -84,13 +105,6 @@ app.controller('DeckController', function($scope, $http, $timeout, Deck) {
             if(Deck.cards[index].count<=0) {
                 Deck.cards.splice(index, 1);
             }
-        }
-    };
-    this.modLand = function(sign, type) {
-        if(sign=='+') {
-            Deck[type] += 1
-        } else if(Deck[type]>0) {
-            Deck[type] -= 1
         }
     };
     $scope.edit = loadedDeck['id'] != '' && loadedDeck['id'] != null;
@@ -108,22 +122,14 @@ app.controller('DeckController', function($scope, $http, $timeout, Deck) {
         $scope.edit = false;
     };
     $scope.save = function() {
-        var cards = [];
-        var lands = $scope.lands;
-        for(land in $scope.lands) {
-            var landCount = Deck[lands[land]];
-            if(landCount>0) {
-                cards.push({id: lands[land], cardId: lands[land], count: landCount, name: lands[land]});
-            }
-        }
-        cards = cards.concat(Deck.cards);
         console.log(Deck.id);
         if(Deck.id==null) {
             $http.post('./create', {
                 name: Deck.name,
                 description: 'Totes a Description',
-                size: Deck.count + Deck.swamp + Deck.island + Deck.forest + Deck.mountain + Deck.plains,
-                cards: cards,
+                universe: Deck.universe.name,
+                size: Deck.count,
+                cards: Deck.cards,
                 colors: Deck.colors,
                 publicity: 1
             }).success(function(data, status){
@@ -137,8 +143,9 @@ app.controller('DeckController', function($scope, $http, $timeout, Deck) {
                 id: Deck.id,
                 name: Deck.name,
                 description: 'Totes a Description',
-                size: Deck.count + Deck.swamp + Deck.island + Deck.forest + Deck.mountain + Deck.plains,
-                cards: cards,
+                universe: Deck.universe.name,
+                size: Deck.count,
+                cards: Deck.cards,
                 colors: Deck.colors,
                 publicity: 1
             }).success(function(data, status){

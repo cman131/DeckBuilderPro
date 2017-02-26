@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <link rel="stylesheet" href="../static/deckbuilder.css">
+    <script>
+        var loadedDeck = {{decky | safe}};
+        var loadedCount = {{count}};
+        var allSets = {{allSets | safe}}
+    </script>
+    <script src="../static/angular.min.js"></script>
+    <script src="../static/wdeckbuilder.js"></script>
+    <div id="app-div" class="no-select" ng-app="app">
+        <div id="deck-view" ng-controller="DeckController as deckctrl">
+            <input type="button" id="save" value="Save" ng-click="save()">
+            <div id="deck-info">
+                <h2 id="deck-name" ng-click="showEditor()" ng-show="!edit">{[deckctrl.deck.name]}</h2>
+                <input name="Deck Name" type="text" ng-show="edit" ng-blur="blurUpdate()" ng-model="deckctrl.deck.name" id="deck-name-input">
+                <h5 id="deck-size">Size: {[deckctrl.deck.count]}</h5>
+            </div>
+            <div id="deck-collection">
+                <ul class="deck-col">
+                    <li class="deck-row">
+                        <ul id="climaxes">
+                            <h3>Climaxes</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'Climax'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                    <li class="deck-row">
+                        <ul id="characters">
+                            <h3>Characters</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'Character'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="deck-col">
+                    <li class="deck-row">
+                        <ul id="events">
+                            <h3>Events</h3>
+                            <li ng-click="deckctrl.remove(card)" class="creature deck-card" ng-repeat="card in deckctrl.deck.cards | cardType:'Event'">{[card.name]} x{[card.count]}</li>
+                        </ul>
+                    </li>
+            </div>
+        </div>
+        <div id="card-view" ng-controller="CardController as menu">
+            <div id="card-filter">
+                <input type="search" ng-model="menu.query">
+                <select ng-model="menu.deck.universe" ng-change="menu.deck.cards=[]" ng-options="option.name for option in menu.sets | distinct:'name'">
+                </select>
+            </div>
+            <ul id="card-display">
+                <li ng-click="menu.add(card)" class="card" ng-repeat="card in menu.list | cardSet:menu.deck.universe | filter:menu.query">
+                    <h2>{[card.name]}</h2>
+                    <h3>{[card.type]}</h3>
+                    <div class="cost">{[card.rarity]} {[card.cost]}</div>
+                    <img ng-src="../{[card.imageurl]}">
+                    <p>{[card.text]}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

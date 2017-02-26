@@ -58,3 +58,13 @@ CREATE TABLE `WeissDeck_WeissCard` (
   `count` tinyint(120) unsigned DEFAULT 1 NOT NULL,
   PRIMARY KEY (`id`)
  ) Engine=InnoDB DEFAULT CHARSET utf8;
+CREATE TABLE `WeissSet` (
+  `id` varchar(5) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+ ) Engine=InnoDB DEFAULT CHARSET utf8;
+CREATE TABLE `WeissSet` (
+  `id` varchar(5) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+ ) Engine=InnoDB DEFAULT CHARSET utf8;
